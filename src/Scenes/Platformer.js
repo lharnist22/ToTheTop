@@ -7,8 +7,12 @@ class Platformer extends Phaser.Scene {
         this.load.scenePlugin('AnimatedTiles', './lib/AnimatedTiles.js', 'animatedTiles', 'animatedTiles');
         this.load.atlas('smoke', 'assets/Smoke/smoke.png', 'assets/Smoke/smoke.json');
         this.load.audio("jump", "assets/sound1.mp3");
-        this.load.audio("bg", "assets/Seashells.mp3");
+        this.load.audio("bg", "assets/Ufouria.mp3");
         this.load.audio("walking", "assets/walking.mp3");
+        this.load.image("bg", "assets/orig.png");
+        this.load.image("bg2", "assets/bg2.jpg");
+        this.load.image("bg3", "assets/bg3.png");
+        this.load.image("bg4", "assets/bg4.png");
     }
 
     init() {
@@ -16,7 +20,7 @@ class Platformer extends Phaser.Scene {
         this.ACCELERATION = 400;
         this.DRAG = 50000;    // DRAG < ACCELERATION = icy slide
         this.physics.world.gravity.y = 900;
-        this.JUMP_VELOCITY = -600;
+        this.JUMP_VELOCITY = -1000;
     }
 
     create() {
@@ -25,6 +29,13 @@ class Platformer extends Phaser.Scene {
         this.map = this.add.tilemap("Level1", 18, 18, 60, 1225);
         this.physics.world.setBounds(0,0, this.map.widthInPixels, this.map.heightInPixels);
         this.is_jumping = false;
+
+        //Background
+        this.bg1 = this.add.image(0, 4105, 'bg').setOrigin(0).setScale(3);
+        this.bg2 = this.add.image(0, 0, 'bg2').setOrigin(0).setScale(.35);
+        this.bg3 = this.add.image(0, 2000, 'bg3').setOrigin(0).setScale(1);
+        this.bg4 = this.add.image(0, 3525, 'bg4').setOrigin(0).setScale(.25);
+        
 
         // Add a tileset to the map
         // First parameter: name we gave the tileset in Tiled
@@ -42,6 +53,8 @@ class Platformer extends Phaser.Scene {
         //Animating tiles
         this.animatedTiles.init(this.map);
 
+        
+
         // set up player
         my.sprite.player = this.physics.add.sprite(635, 5205, "platformer_characters", "tile_0000.png");
         my.sprite.player.setCollideWorldBounds(true);
@@ -49,7 +62,7 @@ class Platformer extends Phaser.Scene {
         this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         this.cameras.main.startFollow(my.sprite.player, true, 0.1, 0.1);
         this.cameras.main.setScroll(my.sprite.player.x, my.sprite.player.y);
-        this.cameras.main.setZoom(1.8);
+        this.cameras.main.setZoom(1.1);
 
         // Enable collision handling
         this.physics.add.collider(my.sprite.player, this.groundLayer);
@@ -73,8 +86,8 @@ class Platformer extends Phaser.Scene {
     }
 
     update() {
-        //console.log(my.sprite.player.x);
-        //console.log(my.sprite.player.y);
+        console.log(my.sprite.player.x);
+        console.log(my.sprite.player.y);
         if(my.sprite.player.x >= 2400){
             this.add.text(2355, 60, 'You win!');
             this.won = true;
