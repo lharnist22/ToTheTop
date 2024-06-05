@@ -7,12 +7,8 @@ class Platformer extends Phaser.Scene {
         this.load.scenePlugin('AnimatedTiles', './lib/AnimatedTiles.js', 'animatedTiles', 'animatedTiles');
         this.load.atlas('smoke', 'assets/Smoke/smoke.png', 'assets/Smoke/smoke.json');
         this.load.audio("jump", "assets/sound1.mp3");
-        this.load.audio("bg", "assets/Ufouria.mp3");
+        this.load.audio("bg", "assets/Seashells.mp3");
         this.load.audio("walking", "assets/walking.mp3");
-        this.load.image("bg", "assets/orig.png");
-        this.load.image("bg2", "assets/bg2.jpg");
-        this.load.image("bg3", "assets/bg3.png");
-        this.load.image("bg4", "assets/bg4.png");
     }
 
     init() {
@@ -54,8 +50,6 @@ class Platformer extends Phaser.Scene {
         //Animating tiles
         this.animatedTiles.init(this.map);
 
-        
-
         // set up player
         my.sprite.player = this.physics.add.sprite(635, 5205, "platformer_characters", "tile_0000.png");
         my.sprite.player.setCollideWorldBounds(true);
@@ -63,7 +57,7 @@ class Platformer extends Phaser.Scene {
         this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         this.cameras.main.startFollow(my.sprite.player, true, 0.1, 0.1);
         this.cameras.main.setScroll(my.sprite.player.x, my.sprite.player.y);
-        this.cameras.main.setZoom(1.1);
+        this.cameras.main.setZoom(1.3);
 
         // Enable collision handling
         this.physics.add.collider(my.sprite.player, this.groundLayer);
@@ -87,8 +81,6 @@ class Platformer extends Phaser.Scene {
     }
 
     update() {
-        console.log(my.sprite.player.x);
-        console.log(my.sprite.player.y);
         if(my.sprite.player.x >= 2400){
             this.add.text(2355, 60, 'You win!');
             this.won = true;
@@ -111,7 +103,6 @@ class Platformer extends Phaser.Scene {
                 this.isWalking = true;
             }
             
-
         } else if(this.cursors.right.isDown) {
             my.sprite.player.body.setAccelerationX(this.ACCELERATION);
             my.sprite.player.setFlip(true, false);
@@ -125,21 +116,20 @@ class Platformer extends Phaser.Scene {
                 });
             }
             if(my.sprite.player.body.blocked.down && this.isWalking === false){
-            
                 this.walking.play();
                 this.isWalking = true;
             }
-
+    
         } else {
             my.sprite.player.body.setAccelerationX(0);
             my.sprite.player.body.setDragX(this.DRAG);
-
+    
             my.sprite.player.anims.play('idle');
             this.isWalking = false;
             this.walking.stop();
             
         }
-
+    
         // player jump
         // note that we need body.blocked rather than body.touching b/c the former applies to tilemap tiles and the latter to the "ground"
         if(!my.sprite.player.body.blocked.down) {
@@ -176,6 +166,7 @@ class Platformer extends Phaser.Scene {
                 this.additional_jump = 0;
             }
         }
-        
     }
-}
+
+    }
+
