@@ -20,7 +20,7 @@ class Platformer extends Phaser.Scene {
         this.ACCELERATION = 400;
         this.DRAG = 50000;    // DRAG < ACCELERATION = icy slide
         this.physics.world.gravity.y = 900;
-        this.JUMP_VELOCITY = -1000;
+        this.JUMP_VELOCITY = -600;
     }
 
     create() {
@@ -28,7 +28,8 @@ class Platformer extends Phaser.Scene {
         // 45 tiles wide and 25 tiles tall.
         this.map = this.add.tilemap("Level1", 18, 18, 60, 1225);
         this.physics.world.setBounds(0,0, this.map.widthInPixels, this.map.heightInPixels);
-        this.is_jumping = false;
+        this.is_jumping = false
+        this.additional_jump = 0;
 
         //Background
         this.bg1 = this.add.image(0, 4105, 'bg').setOrigin(0).setScale(3);
@@ -68,7 +69,7 @@ class Platformer extends Phaser.Scene {
         this.physics.add.collider(my.sprite.player, this.groundLayer);
 
         // set up Phaser-provided cursor key input
-        cursors = this.input.keyboard.createCursorKeys();
+        this.cursors = this.input.keyboard.createCursorKeys();
 
         // debug key listener (assigned to D key)
         this.input.keyboard.on('keydown-D', () => {
@@ -93,7 +94,7 @@ class Platformer extends Phaser.Scene {
             this.won = true;
         }
         
-        if(cursors.left.isDown) {
+        if(this.cursors.left.isDown) {
             my.sprite.player.body.setAccelerationX(-this.ACCELERATION);
             my.sprite.player.resetFlip();
             my.sprite.player.anims.play('walk', true);
@@ -111,7 +112,7 @@ class Platformer extends Phaser.Scene {
             }
             
 
-        } else if(cursors.right.isDown) {
+        } else if(this.cursors.right.isDown) {
             my.sprite.player.body.setAccelerationX(this.ACCELERATION);
             my.sprite.player.setFlip(true, false);
             my.sprite.player.anims.play('walk', true);
@@ -146,32 +147,34 @@ class Platformer extends Phaser.Scene {
             this.walking.stop()
             
         }
-        while(my.sprite.player.body.blocked.down && Phaser.Input.Keyboard.JustDown(cursors.up)) {
+        if(my.sprite.player.body.blocked.down && this.cursors.up.isDown) {
             console.log("Hello");
             this.is_jumping = true;
-            this.JUMP_VELOCITY += 1;
-         /*   this.sound.play("jump");
-            
-            my.sprite.player.body.setVelocityY(this.JUMP_VELOCITY);
-            this.add.particles(my.sprite.player.x - 5, my.sprite.player.y + 10, 'smoke', {
-                frame: 'smoke_03.png',
-                scale: 0.2,
-                duration: 10,
-                lifespan: 100
-            }); */
         }
-
-        if(my.sprite.player.body.blocked.down && !Phaser.Input.Keyboard.JustDown(cursors.up) && this.is_jumping == true){
+    
+        if(this.is_jumping === true && my.sprite.player.body.blocked.down){
+            if(this.cursors.up.isDown){
+                console.log("loading up jump");
+                console.log(this.additional_jump);
+                if(this.additional_jump >= -300){
+                this.additional_jump -= 10;
+                console.log(this.additional_jump);
+            }
+        }
+            else{
+                console.log("time to jump!");
                 this.sound.play("jump");
-            
-            my.sprite.player.body.setVelocityY(this.JUMP_VELOCITY);
-            this.add.particles(my.sprite.player.x - 5, my.sprite.player.y + 10, 'smoke', {
-                frame: 'smoke_03.png',
-                scale: 0.2,
-                duration: 10,
-                lifespan: 100
-            }); 
-            this.is_jumping = false;
+                my.sprite.player.body.setVelocityY(this.JUMP_VELOCITY + this.additional_jump);
+                console.log("jumping");
+                this.add.particles(my.sprite.player.x - 5, my.sprite.player.y + 10, 'smoke', {
+                    frame: 'smoke_03.png',
+                    scale: 0.2,
+                    duration: 10,
+                    lifespan: 100
+                }); 
+                this.is_jumping = false;
+                this.additional_jump = 0;
+            }
         }
         
     }
