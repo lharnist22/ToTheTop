@@ -7,12 +7,8 @@ class Platformer extends Phaser.Scene {
         this.load.scenePlugin('AnimatedTiles', './lib/AnimatedTiles.js', 'animatedTiles', 'animatedTiles');
         this.load.atlas('smoke', 'assets/Smoke/smoke.png', 'assets/Smoke/smoke.json');
         this.load.audio("jump", "assets/sound1.mp3");
-        this.load.audio("bg", "assets/Ufouria.mp3");
+        this.load.audio("bg", "assets/Seashells.mp3");
         this.load.audio("walking", "assets/walking.mp3");
-        this.load.image("bg", "assets/orig.png");
-        this.load.image("bg2", "assets/bg2.jpg");
-        this.load.image("bg3", "assets/bg3.png");
-        this.load.image("bg4", "assets/bg4.png");
     }
 
     init() {
@@ -20,7 +16,7 @@ class Platformer extends Phaser.Scene {
         this.ACCELERATION = 400;
         this.DRAG = 50000;    // DRAG < ACCELERATION = icy slide
         this.physics.world.gravity.y = 900;
-        this.JUMP_VELOCITY = -1000;
+        this.JUMP_VELOCITY = -600;
     }
 
     create() {
@@ -29,14 +25,7 @@ class Platformer extends Phaser.Scene {
         this.map = this.add.tilemap("Level1", 18, 18, 60, 1225);
         this.physics.world.setBounds(0,0, this.map.widthInPixels, this.map.heightInPixels);
         this.is_jumping = false;
-
-        //Background
-        this.bg1 = this.add.image(0, 4105, 'bg').setOrigin(0).setScale(3);
-        this.bg2 = this.add.image(0, 0, 'bg2').setOrigin(0).setScale(.35);
-        this.bg3 = this.add.image(0, 2000, 'bg3').setOrigin(0).setScale(1);
-        this.bg4 = this.add.image(0, 3525, 'bg4').setOrigin(0).setScale(.25);
-        
-
+        this.additional_jump = 0;
         // Add a tileset to the map
         // First parameter: name we gave the tileset in Tiled
         // Second parameter: key for the tilesheet (from this.load.image in Load.js)
@@ -53,8 +42,6 @@ class Platformer extends Phaser.Scene {
         //Animating tiles
         this.animatedTiles.init(this.map);
 
-        
-
         // set up player
         my.sprite.player = this.physics.add.sprite(635, 5205, "platformer_characters", "tile_0000.png");
         my.sprite.player.setCollideWorldBounds(true);
@@ -62,13 +49,13 @@ class Platformer extends Phaser.Scene {
         this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         this.cameras.main.startFollow(my.sprite.player, true, 0.1, 0.1);
         this.cameras.main.setScroll(my.sprite.player.x, my.sprite.player.y);
-        this.cameras.main.setZoom(1.1);
+        this.cameras.main.setZoom(1.3);
 
         // Enable collision handling
         this.physics.add.collider(my.sprite.player, this.groundLayer);
 
         // set up Phaser-provided cursor key input
-        cursors = this.input.keyboard.createCursorKeys();
+        this.cursors = this.input.keyboard.createCursorKeys();
 
         // debug key listener (assigned to D key)
         this.input.keyboard.on('keydown-D', () => {
@@ -86,14 +73,12 @@ class Platformer extends Phaser.Scene {
     }
 
     update() {
-        console.log(my.sprite.player.x);
-        console.log(my.sprite.player.y);
         if(my.sprite.player.x >= 2400){
             this.add.text(2355, 60, 'You win!');
             this.won = true;
         }
         
-        if(cursors.left.isDown) {
+        if(this.cursors.left.isDown) {
             my.sprite.player.body.setAccelerationX(-this.ACCELERATION);
             my.sprite.player.resetFlip();
             my.sprite.player.anims.play('walk', true);
@@ -110,8 +95,8 @@ class Platformer extends Phaser.Scene {
                 this.isWalking = true;
             }
             
-
-        } else if(cursors.right.isDown) {
+    
+        } else if(this.cursors.right.isDown) {
             my.sprite.player.body.setAccelerationX(this.ACCELERATION);
             my.sprite.player.setFlip(true, false);
             my.sprite.player.anims.play('walk', true);
@@ -124,21 +109,20 @@ class Platformer extends Phaser.Scene {
                 });
             }
             if(my.sprite.player.body.blocked.down && this.isWalking === false){
-            
                 this.walking.play();
                 this.isWalking = true;
             }
-
+    
         } else {
             my.sprite.player.body.setAccelerationX(0);
             my.sprite.player.body.setDragX(this.DRAG);
-
+    
             my.sprite.player.anims.play('idle');
             this.isWalking = false;
             this.walking.stop();
             
         }
-
+    
         // player jump
         // note that we need body.blocked rather than body.touching b/c the former applies to tilemap tiles and the latter to the "ground"
         if(!my.sprite.player.body.blocked.down) {
@@ -146,33 +130,36 @@ class Platformer extends Phaser.Scene {
             this.walking.stop()
             
         }
-        while(my.sprite.player.body.blocked.down && Phaser.Input.Keyboard.JustDown(cursors.up)) {
+        if(my.sprite.player.body.blocked.down && this.cursors.up.isDown) {
             console.log("Hello");
             this.is_jumping = true;
-            this.JUMP_VELOCITY += 1;
-         /*   this.sound.play("jump");
-            
-            my.sprite.player.body.setVelocityY(this.JUMP_VELOCITY);
-            this.add.particles(my.sprite.player.x - 5, my.sprite.player.y + 10, 'smoke', {
-                frame: 'smoke_03.png',
-                scale: 0.2,
-                duration: 10,
-                lifespan: 100
-            }); */
         }
-
-        if(my.sprite.player.body.blocked.down && !Phaser.Input.Keyboard.JustDown(cursors.up) && this.is_jumping == true){
+    
+        if(this.is_jumping === true && my.sprite.player.body.blocked.down){
+            if(this.cursors.up.isDown){
+                console.log("loading up jump");
+                console.log(this.additional_jump);
+                if(this.additional_jump >= -300){
+                this.additional_jump -= 10;
+                console.log(this.additional_jump);
+            }
+        }
+            else{
+                console.log("time to jump!");
                 this.sound.play("jump");
-            
-            my.sprite.player.body.setVelocityY(this.JUMP_VELOCITY);
-            this.add.particles(my.sprite.player.x - 5, my.sprite.player.y + 10, 'smoke', {
-                frame: 'smoke_03.png',
-                scale: 0.2,
-                duration: 10,
-                lifespan: 100
-            }); 
-            this.is_jumping = false;
+                my.sprite.player.body.setVelocityY(this.JUMP_VELOCITY + this.additional_jump);
+                console.log("jumping");
+                this.add.particles(my.sprite.player.x - 5, my.sprite.player.y + 10, 'smoke', {
+                    frame: 'smoke_03.png',
+                    scale: 0.2,
+                    duration: 10,
+                    lifespan: 100
+                }); 
+                this.is_jumping = false;
+                this.additional_jump = 0;
+            }
         }
-        
     }
-}
+
+    }
+
