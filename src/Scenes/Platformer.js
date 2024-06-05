@@ -7,7 +7,7 @@ class Platformer extends Phaser.Scene {
         this.load.scenePlugin('AnimatedTiles', './lib/AnimatedTiles.js', 'animatedTiles', 'animatedTiles');
         this.load.atlas('smoke', 'assets/Smoke/smoke.png', 'assets/Smoke/smoke.json');
         this.load.audio("jump", "assets/sound1.mp3");
-        this.load.audio("bg", "assets/Seashells.mp3");
+        this.load.audio("bg", "assets/Ufouria.mp3");
         this.load.audio("walking", "assets/walking.mp3");
     }
 
@@ -34,6 +34,8 @@ class Platformer extends Phaser.Scene {
         this.bg4 = this.add.image(0, 3525, 'bg4').setOrigin(0).setScale(.25);
         
 
+        this.is_jumping = false;
+        this.additional_jump = 0;
         // Add a tileset to the map
         // First parameter: name we gave the tileset in Tiled
         // Second parameter: key for the tilesheet (from this.load.image in Load.js)
@@ -103,6 +105,8 @@ class Platformer extends Phaser.Scene {
                 this.isWalking = true;
             }
             
+
+    
         } else if(this.cursors.right.isDown) {
             my.sprite.player.body.setAccelerationX(this.ACCELERATION);
             my.sprite.player.setFlip(true, false);
