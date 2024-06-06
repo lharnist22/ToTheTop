@@ -7,7 +7,7 @@ class Platformer extends Phaser.Scene {
         this.load.scenePlugin('AnimatedTiles', './lib/AnimatedTiles.js', 'animatedTiles', 'animatedTiles');
         this.load.atlas('smoke', 'assets/Smoke/smoke.png', 'assets/Smoke/smoke.json');
         this.load.audio("jump", "assets/sound1.mp3");
-        this.load.audio("bg", "assets/Ufouria.mp3");
+        this.load.audio("bg", "assets/Seashells.mp3");
         this.load.audio("walking", "assets/walking.mp3");
     }
 
@@ -20,20 +20,11 @@ class Platformer extends Phaser.Scene {
     }
 
     create() {
+       
         // Create a new tilemap game object which uses 18x18 pixel tiles, and is
         // 45 tiles wide and 25 tiles tall.
         this.map = this.add.tilemap("Level1", 18, 18, 60, 1225);
         this.physics.world.setBounds(0,0, this.map.widthInPixels, this.map.heightInPixels);
-        this.is_jumping = false
-        this.additional_jump = 0;
-
-        //Background
-        this.bg1 = this.add.image(0, 4105, 'bg').setOrigin(0).setScale(3);
-        this.bg2 = this.add.image(0, 0, 'bg2').setOrigin(0).setScale(.35);
-        this.bg3 = this.add.image(0, 2000, 'bg3').setOrigin(0).setScale(1);
-        this.bg4 = this.add.image(0, 3525, 'bg4').setOrigin(0).setScale(.25);
-        
-
         this.is_jumping = false;
         this.additional_jump = 0;
         // Add a tileset to the map
@@ -56,7 +47,20 @@ class Platformer extends Phaser.Scene {
         my.sprite.player = this.physics.add.sprite(635, 5205, "platformer_characters", "tile_0000.png");
         my.sprite.player.setCollideWorldBounds(true);
 
+        //set up NPCS
+
+        //Sprite #1
+        my.sprite.npc1 = this.add.sprite(485, 5100, "platformer_characters", "tile_0004.png").setScale(1.25);
+        my.sprite.npc1_collider = this.add.sprite(485, 5100, "platformer_characters", "tile_0004.png").setScale(3)
+        my.sprite.npc1_collider.visible = false;
+        this.npc1_text = ['A', '    B', '             C'];
+        this.speech = 0;
+        this.npc1_turn = true;
+        this.npc1_instruction_shown = false;
+        this.instructionText;
+
         this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+        
         this.cameras.main.startFollow(my.sprite.player, true, 0.1, 0.1);
         this.cameras.main.setScroll(my.sprite.player.x, my.sprite.player.y);
         this.cameras.main.setZoom(1.3);
@@ -66,12 +70,16 @@ class Platformer extends Phaser.Scene {
 
         // set up Phaser-provided cursor key input
         this.cursors = this.input.keyboard.createCursorKeys();
+        this.down_key_handled = false;
 
         // debug key listener (assigned to D key)
         this.input.keyboard.on('keydown-D', () => {
             this.physics.world.drawDebug = this.physics.world.drawDebug ? false : true
             this.physics.world.debugGraphic.clear()
         }, this);
+
+
+      //  this.input.keyboard.on('keydown-X', this.handleKeyPressX, this);
         this.music = this.sound.add("bg", {
             loop: true
         });
@@ -83,6 +91,10 @@ class Platformer extends Phaser.Scene {
     }
 
     update() {
+
+      
+     //   console.log("x" + my.sprite.player.x);
+     //   console.log("y" + my.sprite.player.y);
         if(my.sprite.player.x >= 2400){
             this.add.text(2355, 60, 'You win!');
             this.won = true;
@@ -105,7 +117,6 @@ class Platformer extends Phaser.Scene {
                 this.isWalking = true;
             }
             
-
     
         } else if(this.cursors.right.isDown) {
             my.sprite.player.body.setAccelerationX(this.ACCELERATION);
@@ -170,7 +181,51 @@ class Platformer extends Phaser.Scene {
                 this.additional_jump = 0;
             }
         }
+        if(this.collides(my.sprite.player, my.sprite.npc1_collider) && this.npc1_turn === true){
+          //  this.triggerDialogue_sprite1();
+        if(this.npc1_instruction_shown === false){
+         this.instructionText = this.add.text(470, 5020, 'press \'DOWN (v)\' to interact', { fontsize: '4px', fill: '#fff' });
+         this.npc1_instruction_shown = true;
+        }
+          if(this.cursors.down.isDown){
+            if(this.down_key_handled === false){
+
+            if(dialogueText){
+                dialogueText.destroy();
+            }
+            console.log("x was pressed");
+            var dialogueText = this.add.text(485, 5000, this.npc1_text[this.speech], { fontSize: '15px', fill: '#fff' });
+            if (this.speech < this.npc1_text.length) {
+                this.speech += 1;
+                this.instructionText.destroy();
+                
+            //  dialogueText.destroy();
+             //   dialogueText.visible = false; // Destroy the previous text object
+            } else {
+                // Optionally handle end of dialogue
+              //  console.log("End of dialogue");
+                dialogueText.destroy(); // Destroy the last dialogue text
+             
+                this.npc1_turn = false;
+            }
+          //  this.down_key_handled = true;
+        }
+       
+        }
+
+          
+        }
     }
 
+    
+
+    collides(a, b) {
+        if (Math.abs(a.x - b.x) > (a.displayWidth / 2 + b.displayWidth / 2)) return false;
+        if (Math.abs(a.y - b.y) > (a.displayHeight / 2 + b.displayHeight / 2)) return false;
+        return true;
     }
 
+
+    
+    
+}
