@@ -7,7 +7,7 @@ class Platformer extends Phaser.Scene {
         this.load.scenePlugin('AnimatedTiles', './lib/AnimatedTiles.js', 'animatedTiles', 'animatedTiles');
         this.load.atlas('smoke', 'assets/Smoke/smoke.png', 'assets/Smoke/smoke.json');
         this.load.audio("jump", "assets/sound1.mp3");
-        this.load.audio("bg", "assets/Seashells.mp3");
+        this.load.audio("bg", "assets/Ufouria.mp3");
         this.load.audio("walking", "assets/walking.mp3");
     }
 
