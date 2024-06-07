@@ -70,7 +70,8 @@ class Platformer extends Phaser.Scene {
 
         // set up Phaser-provided cursor key input
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.down_key_handled = false;
+        this.down_key_handled = false; // Flag to handle single key press
+        this.canCheckKey = true; // Flag to allow key checking
 
         // debug key listener (assigned to D key)
         this.input.keyboard.on('keydown-D', () => {
@@ -78,8 +79,8 @@ class Platformer extends Phaser.Scene {
             this.physics.world.debugGraphic.clear()
         }, this);
 
+        // Other create method code...
 
-      //  this.input.keyboard.on('keydown-X', this.handleKeyPressX, this);
         this.music = this.sound.add("bg", {
             loop: true
         });
@@ -89,7 +90,6 @@ class Platformer extends Phaser.Scene {
             loop: true
         });
     }
-
     update() {
 
       
@@ -181,42 +181,39 @@ class Platformer extends Phaser.Scene {
                 this.additional_jump = 0;
             }
         }
-        if(this.collides(my.sprite.player, my.sprite.npc1_collider) && this.npc1_turn === true){
-          //  this.triggerDialogue_sprite1();
-        if(this.npc1_instruction_shown === false){
-         this.instructionText = this.add.text(470, 5020, 'press \'DOWN (v)\' to interact', { fontsize: '4px', fill: '#fff' });
-         this.npc1_instruction_shown = true;
-        }
-          if(this.cursors.down.isDown){
-            if(this.down_key_handled === false){
-
-            if(dialogueText){
-                dialogueText.destroy();
+        if (this.collides(my.sprite.player, my.sprite.npc1_collider) && this.npc1_turn === true) {
+            if (this.npc1_instruction_shown === false) {
+                this.instructionText = this.add.text(470, 5020, 'Press \'DOWN (v)\' to interact', { fontsize: '4px', fill: '#fff' });
+                this.npc1_instruction_shown = true;
             }
-            console.log("x was pressed");
-            var dialogueText = this.add.text(485, 5000, this.npc1_text[this.speech], { fontSize: '15px', fill: '#fff' });
-            if (this.speech < this.npc1_text.length) {
-                this.speech += 1;
-                this.instructionText.destroy();
-                
-            //  dialogueText.destroy();
-             //   dialogueText.visible = false; // Destroy the previous text object
-            } else {
-                // Optionally handle end of dialogue
-              //  console.log("End of dialogue");
-                dialogueText.destroy(); // Destroy the last dialogue text
-             
-                this.npc1_turn = false;
+            if (this.cursors.down.isDown && this.canCheckKey) {
+                this.handleDialogue();
+                this.canCheckKey = false; // Prevent immediate re-check
+                this.time.delayedCall(1000, () => {
+                    this.canCheckKey = true;
+                }, [], this);
             }
-          //  this.down_key_handled = true;
         }
-       
-        }
-
-          
-        }
+     
     }
 
+    handleDialogue() {
+        this.instructionText.destroy();
+        if (this.dialogueText) {
+            this.dialogueText.destroy();
+        }
+
+        this.dialogueText = this.add.text(485, 5000, this.npc1_text[this.speech], { fontSize: '15px', fill: '#fff' });
+
+        if (this.speech < this.npc1_text.length) {
+            this.speech += 1;
+        } else {
+            this.speech = 0; // Reset the dialogue index if needed
+            this.dialogueText.destroy(); // Destroy the last dialogue text
+        //    this.instructionText.setText('Dialogue ended.');
+            this.npc1_turn = false;
+        }
+    }
     
 
     collides(a, b) {
@@ -224,8 +221,4 @@ class Platformer extends Phaser.Scene {
         if (Math.abs(a.y - b.y) > (a.displayHeight / 2 + b.displayHeight / 2)) return false;
         return true;
     }
-
-
-    
-    
 }
