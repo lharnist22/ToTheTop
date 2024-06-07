@@ -9,6 +9,10 @@ class Platformer extends Phaser.Scene {
         this.load.audio("jump", "assets/sound1.mp3");
         this.load.audio("bg", "assets/Ufouria.mp3");
         this.load.audio("walking", "assets/walking.mp3");
+        this.load.image("bg1", "assets/orig.png");
+        this.load.image("bg2", "assets/bg2.jpg");
+        this.load.image("bg3", "assets/bg3.png");
+        this.load.image("bg4", "assets/bg4.png");
     }
 
     init() {
@@ -27,7 +31,10 @@ class Platformer extends Phaser.Scene {
         this.physics.world.setBounds(0,0, this.map.widthInPixels, this.map.heightInPixels);
         this.is_jumping = false;
         this.additional_jump = 0;
-        // Add a tileset to the map
+        this.bg1 = this.add.image(0, 3000, 'bg1').setOrigin(0).setScale(8);
+        this.bg2 = this.add.image(0, -100, 'bg2').setOrigin(0).setScale(.55);
+        this.bg3 = this.add.image(0, 1600, 'bg3').setOrigin(0).setScale(2);  
+        //this.bg3 = this.add.image(0, 3100, 'bg4').setOrigin(0).setScale(.2);          // Add a tileset to the map
         // First parameter: name we gave the tileset in Tiled
         // Second parameter: key for the tilesheet (from this.load.image in Load.js)
         this.tileset = this.map.addTilesetImage("tilemap_packed", "tilemap_tiles");
