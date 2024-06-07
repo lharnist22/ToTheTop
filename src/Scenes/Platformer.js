@@ -31,9 +31,9 @@ class Platformer extends Phaser.Scene {
         this.physics.world.setBounds(0,0, this.map.widthInPixels, this.map.heightInPixels);
         this.is_jumping = false;
         this.additional_jump = 0;
-        this.bg1 = this.add.image(0, 3000, 'bg1').setOrigin(0).setScale(8);
-        this.bg2 = this.add.image(0, -100, 'bg2').setOrigin(0).setScale(.55);
-        this.bg3 = this.add.image(0, 1600, 'bg3').setOrigin(0).setScale(2);  
+        this.bg1 = this.add.image(-300, 3000, 'bg1').setOrigin(0).setScale(8);
+        this.bg2 = this.add.image(-300, -100, 'bg2').setOrigin(0).setScale(.55);
+        this.bg3 = this.add.image(-300, 1600, 'bg3').setOrigin(0).setScale(2);  
         //this.bg3 = this.add.image(0, 3100, 'bg4').setOrigin(0).setScale(.2);          // Add a tileset to the map
         // First parameter: name we gave the tileset in Tiled
         // Second parameter: key for the tilesheet (from this.load.image in Load.js)
@@ -111,6 +111,9 @@ class Platformer extends Phaser.Scene {
             my.sprite.player.body.setAccelerationX(-this.ACCELERATION);
             my.sprite.player.resetFlip();
             my.sprite.player.anims.play('walk', true);
+            this.bg1.x += 0.5;
+            this.bg2.x += 0.5;
+            this.bg3.x += 0.5;
             if(my.sprite.player.body.blocked.down){
                 this.add.particles(my.sprite.player.x + 5, my.sprite.player.y + 10, 'smoke', {
                     frame: 'smoke_01.png',
@@ -129,6 +132,9 @@ class Platformer extends Phaser.Scene {
             my.sprite.player.body.setAccelerationX(this.ACCELERATION);
             my.sprite.player.setFlip(true, false);
             my.sprite.player.anims.play('walk', true);
+            this.bg1.x -= 0.5;
+            this.bg2.x -= 0.5;
+            this.bg3.x -= 0.5;
             if(my.sprite.player.body.blocked.down){
                 this.add.particles(my.sprite.player.x - 5, my.sprite.player.y + 10, 'smoke', {
                     frame: 'smoke_01.png',
