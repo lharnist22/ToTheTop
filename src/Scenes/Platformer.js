@@ -53,7 +53,7 @@ class Platformer extends Phaser.Scene {
         my.sprite.npc1 = this.add.sprite(485, 5100, "platformer_characters", "tile_0004.png").setScale(1.25);
         my.sprite.npc1_collider = this.add.sprite(485, 5100, "platformer_characters", "tile_0004.png").setScale(3)
         my.sprite.npc1_collider.visible = false;
-        this.npc1_text = ['A', '    B', '             C'];
+        this.npc1_text = ['Erm, hi.. Welcome to ToTheTop', 'What is the objective of this game you say?', '...', "I mean its pretty self-explanatory\n if you ask me. \n You gotta make it to the top.", "Press the jump key (^) for a longer period to jump higher!", "Good Luck..", "Why are you still here? To The Top with you!"];
         this.speech = 0;
         this.npc1_turn = true;
         this.npc1_instruction_shown = false;
