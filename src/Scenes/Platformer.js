@@ -63,7 +63,7 @@ class Platformer extends Phaser.Scene {
         
         this.cameras.main.startFollow(my.sprite.player, true, 0.1, 0.1);
         this.cameras.main.setScroll(my.sprite.player.x, my.sprite.player.y);
-        this.cameras.main.setZoom(1.3);
+        this.cameras.main.setZoom(1.2);
 
         // Enable collision handling
         this.physics.add.collider(my.sprite.player, this.groundLayer);
