@@ -60,11 +60,32 @@ class Platformer extends Phaser.Scene {
         my.sprite.npc1 = this.add.sprite(485, 5100, "platformer_characters", "tile_0004.png").setScale(1.25);
         my.sprite.npc1_collider = this.add.sprite(485, 5100, "platformer_characters", "tile_0004.png").setScale(3)
         my.sprite.npc1_collider.visible = false;
-        this.npc1_text = ['Erm, hi.. Welcome to ToTheTop', 'What is the objective of this game you say?', '...', "I mean its pretty self-explanatory\n if you ask me. \n You gotta make it to the top.", "Press the jump key (^) for a longer period to jump higher!", "Good Luck..", "Why are you still here? To The Top with you!"];
+        this.npc1_text = ['Erm, hi.. Welcome to ToTheTop', 'What is the objective of this game you say?', '...', "I mean its pretty self-explanatory\n if you ask me. You gotta make it to the top.", "Press the jump key (^) \n for a longer period to jump higher!", "Good Luck..", "Why are you still here? To The Top with you!"];
         this.speech = 0;
         this.npc1_turn = true;
         this.npc1_instruction_shown = false;
         this.instructionText;
+
+        //Sprite #2
+        my.sprite.npc2 = this.add.sprite(660, 2778, "platformer_characters", "tile_0003.png").setScale(1.25);
+        my.sprite.npc2_collider = this.add.sprite(660, 2778, "platformer_characters", "tile_0003.png").setScale(3)
+        my.sprite.npc2_collider.visible = false;
+        this.npc2_text = ['Howdy partner! Welcome to the Mushroom Caves!', 'These caves are quite spectacular,\n as you can see there are plenty of\n mushrooms around', '...', "Well, I guess you gotta keep climbing\n But please! Do make yourself at home.\n We don't get many visitors around here."];
+        this.speech2 = 0;
+        this.npc2_turn = true;
+        this.npc2_instruction_shown = false;
+        this.instructionText2;
+
+        //Sprite #3
+        my.sprite.npc3 = this.add.sprite(750, 1302, "platformer_characters", "tile_0006.png").setScale(1.25);
+        my.sprite.npc3_collider = this.add.sprite(750, 1302, "platformer_characters", "tile_0003.png").setScale(3)
+        my.sprite.npc3_collider.visible = false;
+        this.npc3_text = ["You're almost there man!", 'Be caureful though,\n these clouds can be a bit problematic ... \n Especially that last one...'];
+        this.speech3 = 0;
+        this.npc3_turn = true;
+        this.npc3_instruction_shown = false;
+        this.instructionText3;
+
 
         this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         
@@ -100,12 +121,8 @@ class Platformer extends Phaser.Scene {
     update() {
 
       
-     //   console.log("x" + my.sprite.player.x);
-     //   console.log("y" + my.sprite.player.y);
-        if(my.sprite.player.x >= 2400){
-            this.add.text(2355, 60, 'You win!');
-            this.won = true;
-        }
+        console.log("x" + my.sprite.player.x);
+        console.log("y" + my.sprite.player.y);
         
         if(this.cursors.left.isDown) {
             my.sprite.player.body.setAccelerationX(-this.ACCELERATION);
@@ -201,6 +218,64 @@ class Platformer extends Phaser.Scene {
             }
             if (this.cursors.down.isDown && this.canCheckKey) {
                 this.handleDialogue();
+                this.canCheckKey = false; // Prevent immediate re-check
+                this.time.delayedCall(1000, () => {
+                    this.canCheckKey = true;
+                }, [], this);
+            }
+        }
+
+        //Sprite #2 text
+
+        if (this.collides(my.sprite.player, my.sprite.npc2_collider) && this.npc2_turn === true) {
+            if (this.npc2_instruction_shown === false) {
+                this.instructionText2 = this.add.text(500, 2680, 'Press \'DOWN (v)\' to interact', { fontsize: '4px', fill: '#fff' });
+                this.npc2_instruction_shown = true;
+            }
+            if (this.cursors.down.isDown && this.canCheckKey) {
+                this.instructionText2.destroy();
+                if (this.dialogueText2) {
+                    this.dialogueText2.destroy();
+                }
+                this.dialogueText2 = this.add.text(500, 2680, this.npc2_text[this.speech2], { fontSize: '15px', fill: '#fff' });
+                if (this.speech2 < this.npc2_text.length) {
+                    this.speech2 += 1;
+                } else {
+                    this.speech2 = 0; // Reset the dialogue index if needed
+                    this.dialogueText2.destroy(); // Destroy the last dialogue text
+                //    this.instructionText.setText('Dialogue ended.');
+                    this.npc2_turn = false;
+                }
+                //this.handleDialogue();
+                this.canCheckKey = false; // Prevent immediate re-check
+                this.time.delayedCall(1000, () => {
+                    this.canCheckKey = true;
+                }, [], this);
+            }
+        }
+
+        //Sprite #3 text
+        
+        if (this.collides(my.sprite.player, my.sprite.npc3_collider) && this.npc3_turn === true) {
+            if (this.npc3_instruction_shown === false) {
+                this.instructionText3 = this.add.text(400, 1200, 'Press \'DOWN (v)\' to interact', { fontsize: '4px', fill: '#fff' });
+                this.npc3_instruction_shown = true;
+            }
+            if (this.cursors.down.isDown && this.canCheckKey) {
+                this.instructionText3.destroy();
+                if (this.dialogueText3) {
+                    this.dialogueText3.destroy();
+                }
+                this.dialogueText3 = this.add.text(400, 1200, this.npc3_text[this.speech3], { fontSize: '15px', fill: '#fff' });
+                if (this.speech3 < this.npc2_text.length) {
+                    this.speech3 += 1;
+                } else {
+                    this.speech3 = 0; // Reset the dialogue index if needed
+                    this.dialogueText3.destroy(); // Destroy the last dialogue text
+                //    this.instructionText.setText('Dialogue ended.');
+                    this.npc3_turn = false;
+                }
+                //this.handleDialogue();
                 this.canCheckKey = false; // Prevent immediate re-check
                 this.time.delayedCall(1000, () => {
                     this.canCheckKey = true;
