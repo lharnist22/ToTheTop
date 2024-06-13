@@ -13,6 +13,7 @@ class Platformer extends Phaser.Scene {
         this.load.image("bg2", "assets/bg2.jpg");
         this.load.image("bg3", "assets/bg3.png");
         this.load.image("bg4", "assets/bg4.png");
+        
     }
 
     init() {
@@ -24,6 +25,7 @@ class Platformer extends Phaser.Scene {
     }
 
     create() {
+        
        
         // Create a new tilemap game object which uses 18x18 pixel tiles, and is
         // 45 tiles wide and 25 tiles tall.
@@ -51,12 +53,13 @@ class Platformer extends Phaser.Scene {
         this.animatedTiles.init(this.map);
 
         // set up player
+        // 635, 5205,
         my.sprite.player = this.physics.add.sprite(635, 5205, "platformer_characters", "tile_0000.png");
         my.sprite.player.setCollideWorldBounds(true);
 
         //set up NPCS
 
-        //Sprite #1
+        //Sprite #1 
         my.sprite.npc1 = this.add.sprite(485, 5100, "platformer_characters", "tile_0004.png").setScale(1.25);
         my.sprite.npc1_collider = this.add.sprite(485, 5100, "platformer_characters", "tile_0004.png").setScale(3)
         my.sprite.npc1_collider.visible = false;
@@ -80,7 +83,7 @@ class Platformer extends Phaser.Scene {
         my.sprite.npc3 = this.add.sprite(750, 1302, "platformer_characters", "tile_0006.png").setScale(1.25);
         my.sprite.npc3_collider = this.add.sprite(750, 1302, "platformer_characters", "tile_0003.png").setScale(3)
         my.sprite.npc3_collider.visible = false;
-        this.npc3_text = ["You're almost there man!", 'Be caureful though,\n these clouds can be a bit problematic ... \n Especially that last one...'];
+        this.npc3_text = ["You're almost there man!", 'Be careful though,\n these clouds can be a bit problematic ... \n Especially that last one...'];
         this.speech3 = 0;
         this.npc3_turn = true;
         this.npc3_instruction_shown = false;
@@ -120,6 +123,10 @@ class Platformer extends Phaser.Scene {
     }
     update() {
 
+        if(my.sprite.player.y <= 96 && my.sprite.player.body.blocked.down){
+            this.scene.start('endgameclass');
+            this.music.stop();
+        }
       
         console.log("x" + my.sprite.player.x);
         console.log("y" + my.sprite.player.y);

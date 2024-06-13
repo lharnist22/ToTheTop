@@ -33,9 +33,8 @@ let config = {
     
     width: 1100,
     height: 575,
-    scene: [Load, Platformer]
+    scene: [startscene, Load, endgame, Platformer]
 }
-
 var cursors;
 const SCALE = 2.0;
 var my = {sprite: {}, text: {}};
